@@ -1,0 +1,51 @@
+{
+ "kind": "HTTPProxy",
+ "apiVersion": "projectcontour.io/v1",
+ "metadata": {
+  "name": "cafe-ingress",
+  "creationTimestamp": null,
+  "annotations": {
+   "ingress-2-httpproxy/supported-hosts": "cafe.example.com",
+   "ingress-2-httpproxy/unsupported-hosts": "cafe1.example.com,cafe2.example.com"
+  }
+ },
+ "spec": {
+  "virtualhost": {
+   "fqdn": "cafe.cafe.example.com",
+   "tls": {
+    "secretName": "cafe-secret"
+   }
+  },
+  "routes": [
+   {
+    "conditions": [
+     {
+      "prefix": "/tea"
+     }
+    ],
+    "services": [
+     {
+      "name": "tea-svc",
+      "port": 80
+     }
+    ]
+   },
+   {
+    "conditions": [
+     {
+      "prefix": "/coffee"
+     }
+    ],
+    "services": [
+     {
+      "name": "coffee-svc",
+      "port": 80
+     }
+    ]
+   }
+  ]
+ },
+ "status": {
+  "loadBalancer": {}
+ }
+}
