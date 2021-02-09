@@ -49,9 +49,9 @@ func main() {
 
 	// command line parameters
 	var ingressFilePath string
-	flag.StringVar(&ingressFilePath, "f", "", "the name of the input file with deployment config. The default is stdin.")
+	flag.StringVar(&ingressFilePath, "f", "", "the name of the input file with Ingress . The default is stdin.")
 	var httpProxyFilePath string
-	flag.StringVar(&httpProxyFilePath, "o", "", "the name of the output file of deployment.apps. The default is stdout.")
+	flag.StringVar(&httpProxyFilePath, "o", "", "the name of the output file of HTTPProxy. The default is stdout.")
 	debug := flag.Bool("debug", false, "debug flag, it turns verbose on")
 	jsonFormat := flag.Bool("json", false, "json parameter, it accepts json format as input. The output will be in json as well.")
 
@@ -74,15 +74,15 @@ func main() {
 	}
 
 	if ingressFilePath == "" {
-		log.Debugf("[%s] Reading deploymentconfig from stdin.", pluginName)
+		log.Debugf("[%s] Reading Ingress from stdin.", pluginName)
 	} else {
-		log.Debugf("[%s] Deploymentconfig input file is %s", pluginName, ingressFilePath)
+		log.Debugf("[%s] Ingress input file is %s", pluginName, ingressFilePath)
 	}
 
 	if httpProxyFilePath == "" {
-		log.Debugf("[%s] Writing deployment to stdout.", pluginName)
+		log.Debugf("[%s] Writing HTTPProxy to stdout.", pluginName)
 	} else {
-		log.Debugf("[%s] Deployment output file is %s", pluginName, httpProxyFilePath)
+		log.Debugf("[%s] HTTPProxy output file is %s", pluginName, httpProxyFilePath)
 	}
 	log.Debugf("[%s] json input format file is set to %#v", pluginName, *jsonFormat)
 
@@ -145,18 +145,18 @@ func main() {
 	var domain string
 
 	domain = ingress.Spec.TLS[0].Hosts[0]
-	httpProxy := ingress2httpproxy.Mutate(pluginName, log, ingress, domain)
 
-	log.Tracef("[%s] HTTPProxy content: %#v", pluginName, httpProxy)
+	hp := ingress2httpproxy.NewMutator(pluginName, log, ingress, domain)
+	output := hp.Mutate()
 
 	var outputHTTPProxy []byte
 	if *jsonFormat {
 		log.Debugf("[%s] Writing json output.", pluginName)
-		outputHTTPProxy, _ = json.MarshalIndent(httpProxy, "", " ")
+		outputHTTPProxy, _ = json.MarshalIndent(&output.HTTPProxy, "", " ")
 	} else {
 		log.Debugf("[%s] Writing YAML output.", pluginName)
-		fmt.Print("ff", httpProxy)
-		outputHTTPProxy, _ = yaml.Marshal(httpProxy)
+		fmt.Print("ff", &output.HTTPProxy)
+		outputHTTPProxy, _ = yaml.Marshal(&output.HTTPProxy)
 	}
 
 	if httpProxyFilePath == "" {

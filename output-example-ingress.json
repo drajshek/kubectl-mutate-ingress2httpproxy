@@ -11,10 +11,8 @@
  },
  "spec": {
   "virtualhost": {
-   "fqdn": "cafe.cafe.example.com",
-   "tls": {
-    "secretName": "cafe-secret"
-   }
+   "fqdn": "cafe.cafe.example.com"
+   
   },
   "routes": [
    {
