@@ -7,5 +7,4 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/sirupsen/logrus v1.7.0
 	k8s.io/api v0.20.2
-
 )
